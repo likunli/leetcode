@@ -33,12 +33,6 @@ class Solution {
         nums[right] = tmp;
     }
 
-    private static void swap(int[] nums, int left, int right) {
-        int tmp = nums[left];
-        nums[left] = nums[right];
-        nums[right] = tmp;
-    }
-
     // Given a sorted array nums, 
     // remove the duplicates in-place such that duplicates appeared at most twice and return the new length.
 
