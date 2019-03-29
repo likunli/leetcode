@@ -1,12 +1,70 @@
 import java.util.*;
 
-
 class Solution {
 
     static List<int[]> getSkyline(int[][] buildings) {
-        List<int[]> res= new ArrayList<>();
+        if (buildings.length == 0 || buildings[0].length == 0) {
+            return new ArrayList<>();
+        }
+        return devide(buildings, 0, buildings.length - 1);
+    }
 
+    private static List<int[]> devide(int[][] buildings, int start, int end) {
+        if (start == end) {
+            List<int[]> res = new ArrayList<>();
+            res.add(new int[] {buildings[start][0], buildings[start][2]});
+            res.add(new int[] {buildings[start][1], 0});
+            return res;
+        } else {
+            List<int[]> left = devide(buildings, start, start + (end - start) / 2);
+            List<int[]> right = devide(buildings, start + (end - start) / 2 + 1, end);
+            return merge(left, right);
+        }
+    }
 
+    private static List<int[]> merge(List<int[]> s, List<int[]> t) {
+        List<int[]> res = new ArrayList<>();
+
+        int currentPosition = 0;
+        int sHeight = 0;
+        int tHeight = 0;
+        int sIndex = 0;
+        int tIndex = 0;
+        int preHight = 0;
+        while (sIndex < s.size() && tIndex < t.size()) {
+            int[] sCur = s.get(sIndex);
+            int[] tCur = t.get(tIndex);
+
+            if (sCur[0] < tCur[0]) {
+                currentPosition = sCur[0];
+                sHeight = sCur[1];
+                sIndex++;
+            } else if (sCur[0] > tCur[0]) {
+                currentPosition = tCur[0];
+                tHeight = tCur[1];
+                tIndex++;
+            } else {
+                currentPosition = sCur[0];
+                sHeight = sCur[1];
+                tHeight = tCur[1];
+                sIndex++;
+                tIndex++;
+            }
+            int currentHeight = Math.max(sHeight, tHeight);
+            if (preHight != currentHeight) {
+                res.add(new int[] {currentPosition, currentHeight});
+                preHight = currentHeight;
+            }
+            
+        }
+
+        while (sIndex < s.size()) {
+            res.add(s.get(sIndex++));
+        }
+
+        while (tIndex < t.size()) {
+            res.add(t.get(tIndex++));
+        }
         return res;
     }
 
@@ -23,7 +81,7 @@ class Solution {
     // The geometric information of each building is represented 
     // by a triplet of integers [Li, Ri, Hi], where Li and Ri are the x coordinates 
     // of the left and right edge of the ith building, respectively, and Hi is its height. 
-    // It is guaranteed that 0 ≤ Li, Ri ≤ INT_MAX, 0 < Hi ≤ INT_MAX, and Ri - Li > 0. 
+    // It is guaranteed that 0 <= Li, Ri <= INT_MAX, 0 < Hi <= INT_MAX, and Ri - Li > 0. 
     // You may assume all buildings are perfect rectangles grounded on an absolutely flat surface at height 0.
 
     // For instance, the dimensions of all buildings in Figure A are recorded as:
